@@ -1,0 +1,15 @@
+name,category,feeds,homepage,enabled,notes
+OPEC 石油输出国组织,能源组织,https://www.opec.org/opec_web/en/press_room/rss.xml;https://news.google.com/rss/search?q=site%3Aopec.org+when%3A7d&hl=en-US&gl=US&ceid=US:en,https://www.opec.org,1,产量政策/会议公报 油价核心变量（含GN备份）
+IEA 国际能源署,能源组织,https://www.iea.org/news?format=rss;https://news.google.com/rss/search?q=site%3Aiea.org+when%3A7d&hl=en-US&gl=US&ceid=US:en,https://www.iea.org,1,月度油市报告/能源政策（含GN备份）
+EIA 美国能源信息署,能源组织,https://www.eia.gov/rss/todayinenergy.xml;https://www.eia.gov/rss/pressreleases.xml,https://www.eia.gov,1,库存数据/短期能源展望
+IMF 国际货币基金组织,国际金融,https://www.imf.org/en/News/RSS?language=eng;https://news.google.com/rss/search?q=site%3Aimf.org+when%3A7d&hl=en-US&gl=US&ceid=US:en,https://www.imf.org,1,全球经济展望（含GN备份）
+World Bank 世界银行,国际金融,https://feeds.worldbank.org/en/news?format=rss;https://news.google.com/rss/search?q=site%3Aworldbank.org+when%3A7d&hl=en-US&gl=US&ceid=US:en,https://www.worldbank.org,1,全球经济与大宗商品展望（含GN备份）
+Federal Reserve 美联储,央行,https://www.federalreserve.gov/feeds/press_all.xml,https://www.federalreserve.gov,1,利率/美元 影响油价定价
+ECB 欧洲央行,央行,https://www.ecb.europa.eu/rss/press.html,https://www.ecb.europa.eu,1,欧元区货币政策
+Bank of Japan 日本央行,央行,https://www.boj.or.jp/en/rss/whatsnew.rss;https://news.google.com/rss/search?q=site%3Aboj.or.jp+when%3A7d&hl=en-US&gl=US&ceid=US:en,https://www.boj.or.jp,1,日元与货币政策（含GN备份）
+White House 白宫,政府,https://www.whitehouse.gov/feed/;https://news.google.com/rss/search?q=site%3Awhitehouse.gov+(oil+OR+energy+OR+sanction+OR+iran+OR+russia)+when%3A7d&hl=en-US&gl=US&ceid=US:en,https://www.whitehouse.gov,1,行政令/能源与外交政策（含GN备份）
+US State Department 国务院,政府外交,https://www.state.gov/rss-feed/press-releases/feed/;https://news.google.com/rss/search?q=site%3Astate.gov+(oil+OR+sanction+OR+iran+OR+russia+OR+opec)+when%3A7d&hl=en-US&gl=US&ceid=US:en,https://www.state.gov,1,外交声明/斡旋（含GN备份）
+US Treasury 财政部,政府制裁,https://home.treasury.gov/news/press-releases/feed;https://news.google.com/rss/search?q=site%3Ahome.treasury.gov+(sanction+OR+russia+OR+iran+OR+oil)+when%3A7d&hl=en-US&gl=US&ceid=US:en,https://home.treasury.gov,1,对俄/伊等能源制裁公告（含GN备份）
+NATO 北约,军事同盟,https://www.nato.int/webservices/xml?feed=news&lang=en;https://news.google.com/rss/search?q=site%3Anato.int+when%3A7d&hl=en-US&gl=US&ceid=US:en,https://www.nato.int,1,军事冲突与安全态势（含GN备份）
+IAEA 国际原子能机构,国际组织,https://www.iaea.org/rss.xml;https://news.google.com/rss/search?q=site%3Aiaea.org+(iran+OR+nuclear)+when%3A7d&hl=en-US&gl=US&ceid=US:en,https://www.iaea.org,1,伊朗核问题（含GN备份）
+EU Commission 欧盟委员会,区域组织,https://ec.europa.eu/commission/presscorner/api/rss?language=en,https://commission.europa.eu,1,对俄能源制裁/禁运政策
