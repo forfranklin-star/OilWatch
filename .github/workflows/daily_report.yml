@@ -1,0 +1,55 @@
+name: daily-oil-report
+
+# 每天北京时间 09:08 生成报告（GitHub Actions 使用 UTC，09:08 CST = 01:08 UTC）
+# 错峰用 08 分，降低 GitHub 整点任务排队延迟
+# 同时支持手动触发（Actions 页面 -> Run workflow）
+on:
+  schedule:
+    - cron: '8 1 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-oil-report
+  cancel-in-progress: false
+
+jobs:
+  build-report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      REPORT_TZ: Asia/Shanghai
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Show source list
+        run: python -m oilwatch.cli sources
+
+      - name: Generate daily report
+        run: python -m oilwatch.cli daily --window-hours 24 --min-score 3
+
+      - name: Commit reports
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add reports
+          if git diff --cached --quiet; then
+            echo "今日无新增内容"
+          else
+            git commit -m "chore(reports): daily report $(date -u +%Y-%m-%d)"
+            git push
+          fi
