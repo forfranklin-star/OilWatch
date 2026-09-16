@@ -7,7 +7,7 @@ name: wake-up
 # （CURLE_TOO_MANY_REDIRECTS）——截图中的报错正是这个原因，与仓库是否 public 无关。
 on:
   schedule:
-    - cron: '23 */12 * * *'   # 每12小时（UTC 00:23/12:23，即北京 08:23/20:23）
+    - cron: '23 */8 * * *'    # 每8小时（UTC 00:23/08:23/16:23，即日本 09:23/17:23/01:23）
   workflow_dispatch:
 
 jobs:
