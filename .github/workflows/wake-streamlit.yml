@@ -1,34 +1,43 @@
-name: 定时唤醒 Streamlit 应用
+name: wake-up
 
-# 触发方式：
-#   1. 定时：每日北京时间 08:00 / 16:00 / 24:00（对应 UTC 00:00 / 08:00 / 16:00）
-#   2. 手动：Actions 页面可手动触发
+# 定时访问 Streamlit 应用，防止免费版 7 天无前端访问后休眠。
+# 关键点：Streamlit 对非浏览器请求会做 3 次带 Cookie 的跳转（share.streamlit.io
+# 鉴权/唤醒中转 -> /-/login -> 回应用）。curl 必须带 cookie 罐(-c/-b)和浏览器
+# 请求头，否则 Cookie 丢失会在 /-/login 死循环，curl 报 "exit code 47"
+# （CURLE_TOO_MANY_REDIRECTS）——截图中的报错正是这个原因，与仓库是否 public 无关。
 on:
   schedule:
-    - cron: '0 0,8,16 * * *'   # UTC 时间，北京时间 = UTC+8
+    - cron: '23 */12 * * *'   # 每12小时（UTC 00:23/12:23，即北京 08:23/20:23）
   workflow_dispatch:
 
 jobs:
-  wake-up:
+  wake:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
-      - name: 访问应用（跟随重定向，触发唤醒）
+      - name: 访问应用（带 Cookie 罐跟随唤醒跳转）
         run: |
-          echo "=== 第一次请求：触发唤醒 ==="
-          curl -L -s -o /dev/null \
-            -w "HTTP状态: %{http_code}\n最终地址: %{url_effective}\n总耗时: %{time_total}s\n" \
-            --max-time 90 \
-            --retry 2 --retry-delay 5 \
-            "https://oilwatch-han.streamlit.app/"
+          APP="https://oilwatch-han.streamlit.app"
+          UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
 
-          echo ""
-          echo "=== 等待应用启动（15秒）==="
-          sleep 15
+          echo "=== 1) 健康检查（无需登录，返回 {\"status\":\"ok\"} 即实例在运行）==="
+          curl -sS -m 20 -o /tmp/health.txt -w "healthz HTTP: %{http_code}\n" "$APP/healthz" || true
+          cat /tmp/health.txt; echo
 
-          echo ""
-          echo "=== 第二次请求：确认应用已响应 ==="
-          curl -L -s -o /dev/null \
-            -w "HTTP状态: %{http_code}\n最终地址: %{url_effective}\n总耗时: %{time_total}s\n" \
-            --max-time 60 \
-            "https://oilwatch-han.streamlit.app/"
-#（注：内容由AI生成）
+          echo "=== 2) 触发唤醒（-c/-b 保存并回传 Cookie，3 跳后应回到 200）==="
+          code=$(curl -sS -L --max-redirs 10 -m 60 \
+            -c cookies.txt -b cookies.txt \
+            -A "$UA" \
+            -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" \
+            -H "Accept-Language: zh-CN,zh;q=0.9,en;q=0.8" \
+            -o /tmp/app.html -w "%{http_code}" \
+            "$APP/" || echo "000")
+          echo "最终 HTTP: $code（跟随跳转次数见下）"
+
+          curl -sS -o /dev/null -m 20 -b cookies.txt -A "$UA" "$APP/healthz" || true
+
+          if [ "$code" != "200" ]; then
+            echo "::error::唤醒失败，最终状态码 $code（若为 000/47 多为网络或重定向问题）"
+            exit 1
+          fi
+          grep -qi streamlit /tmp/app.html && echo "应用页面已正常返回，唤醒成功"
