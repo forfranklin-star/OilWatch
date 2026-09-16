@@ -1,0 +1,34 @@
+name: 定时唤醒 Streamlit 应用
+
+# 触发方式：
+#   1. 定时：每日北京时间 08:00 / 16:00 / 24:00（对应 UTC 00:00 / 08:00 / 16:00）
+#   2. 手动：Actions 页面可手动触发
+on:
+  schedule:
+    - cron: '0 0,8,16 * * *'   # UTC 时间，北京时间 = UTC+8
+  workflow_dispatch:
+
+jobs:
+  wake-up:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 访问应用（跟随重定向，触发唤醒）
+        run: |
+          echo "=== 第一次请求：触发唤醒 ==="
+          curl -L -s -o /dev/null \
+            -w "HTTP状态: %{http_code}\n最终地址: %{url_effective}\n总耗时: %{time_total}s\n" \
+            --max-time 90 \
+            --retry 2 --retry-delay 5 \
+            "https://oilwatch-han.streamlit.app/"
+
+          echo ""
+          echo "=== 等待应用启动（15秒）==="
+          sleep 15
+
+          echo ""
+          echo "=== 第二次请求：确认应用已响应 ==="
+          curl -L -s -o /dev/null \
+            -w "HTTP状态: %{http_code}\n最终地址: %{url_effective}\n总耗时: %{time_total}s\n" \
+            --max-time 60 \
+            "https://oilwatch-han.streamlit.app/"
+#（注：内容由AI生成）
