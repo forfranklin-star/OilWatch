@@ -1,0 +1,46 @@
+rank,name,region,feeds,homepage,tier,enabled,notes
+1,BBC News,英国/全球,https://feeds.bbci.co.uk/news/world/rss.xml;https://feeds.bbci.co.uk/news/business/rss.xml,https://www.bbc.com/news,top30,1,全球影响力第一梯队 世界+商业
+2,The New York Times,美国,https://rss.nytimes.com/services/xml/rss/nyt/World.xml;https://rss.nytimes.com/services/xml/rss/nyt/Economy.xml;https://rss.nytimes.com/services/xml/rss/nyt/Business.xml,https://www.nytimes.com,top30,1,世界/经济/商业
+3,CNN,美国/全球,http://rss.cnn.com/rss/edition_world.rss;http://rss.cnn.com/rss/money_news_international.rss,https://www.cnn.com,top30,1,国际版世界+财经
+4,The Guardian,英国,https://www.theguardian.com/world/rss;https://www.theguardian.com/business/rss;https://www.theguardian.com/environment/rss,https://www.theguardian.com,top30,1,世界/商业/环境能源
+5,Associated Press,美国/全球,https://feeds.apnews.com/rss/apf-worldnews;https://feeds.apnews.com/rss/apf-business,https://apnews.com,top30,1,美联社 全球通讯社
+6,Washington Post,美国,https://feeds.washingtonpost.com/rss/world;https://feeds.washingtonpost.com/rss/business,https://www.washingtonpost.com,top30,1,世界/商业 政策报道强
+7,Reuters,英国/全球,https://news.google.com/rss/search?q=site%3Areuters.com+when%3A1d&hl=en-US&gl=US&ceid=US:en;https://news.google.com/rss/search?q=site%3Areuters.com+(business+OR+markets+OR+oil+OR+opec)+when%3A1d&hl=en-US&gl=US&ceid=US:en,https://www.reuters.com,top30,1,路透社（官网已停RSS 经Google News站内检索稳定获取）
+8,Al Jazeera English,卡塔尔/全球南方,https://www.aljazeera.com/xml/rss/all.xml,https://www.aljazeera.com,top30,1,中东报道权威 全部新闻
+9,Bloomberg,美国/全球,https://feeds.bloomberg.com/markets/news.rss;https://feeds.bloomberg.com/politics/news.rss,https://www.bloomberg.com,top30,1,市场+政治 标题免费
+10,CNBC,美国,https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=100003114;https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=10000664,https://www.cnbc.com,top30,1,世界+商业
+11,Financial Times,英国/全球,https://www.ft.com/world?format=rss;https://www.ft.com/markets?format=rss,https://www.ft.com,top30,1,世界+市场 标题摘要免费
+12,The Wall Street Journal,美国,https://feeds.a.dj.com/rss/RSSWorldNews.xml;https://feeds.a.dj.com/rss/RSSMarketsMain.xml,https://www.wsj.com,top30,1,世界+市场
+13,The Economist,英国/全球,https://www.economist.com/international/rss.xml;https://www.economist.com/finance-and-economics/rss.xml,https://www.economist.com,top30,1,国际+金融经济
+14,NPR,美国,https://feeds.npr.org/1004/rss.xml;https://feeds.npr.org/1006/rss.xml,https://www.npr.org,top30,1,世界+商业
+15,Politico,美国,https://www.politico.com/rss/politicopicks.xml;https://www.politico.com/rss/energy.xml,https://www.politico.com,top30,1,美国政治+能源政策专线
+16,The Hill,美国,https://thehill.com/feed/,https://thehill.com,top30,1,美国国会与政策
+17,Axios,美国,https://api.axios.com/feed/,https://www.axios.com,top30,1,政经快讯
+18,USA Today,美国,https://rssfeeds.usatoday.com/usatodaycomworld-topstories;https://rssfeeds.usatoday.com/usatodaycommoney-topstories,https://www.usatoday.com,top30,1,世界+财经
+19,Fox News,美国,http://feeds.foxnews.com/foxnews/world;http://feeds.foxnews.com/foxnews/business,https://www.foxnews.com,top30,1,世界+商业
+20,NBC News,美国,https://feeds.nbcnews.com/nbcnews/public/world;https://feeds.nbcnews.com/nbcnews/public/business,https://www.nbcnews.com,top30,1,世界+商业
+21,DW 德国之声,德国,https://rss.dw.com/rdf/rss-en-world;https://rss.dw.com/rdf/rss-en-business,https://www.dw.com,top30,1,英文世界+商业 欧洲视角
+22,France 24,法国,https://www.france24.com/en/rss;https://www.france24.com/en/business/rss,https://www.france24.com/en,top30,1,英文全部+商业
+23,NHK World Japan,日本,https://www3.nhk.or.jp/nhkworld/en/news/feed/,https://www3.nhk.or.jp/nhkworld,top30,1,日本放送协会英文世界新闻
+24,Nikkei Asia,日本/亚洲,https://asia.nikkei.com/rss/feed/topstories;https://asia.nikkei.com/rss/feed/politics,https://asia.nikkei.com,top30,1,亚洲政经头条
+25,Sky News,英国,https://feeds.skynews.com/feeds/rss/world.xml;https://feeds.skynews.com/feeds/rss/business.xml,https://news.sky.com,top30,1,世界+商业
+26,The Telegraph,英国,https://www.telegraph.co.uk/world-news/rss.xml;https://www.telegraph.co.uk/business/rss.xml,https://www.telegraph.co.uk,top30,1,世界+商业
+27,CBC News,加拿大,https://www.cbc.ca/webfeed/rss/rss-world;https://www.cbc.ca/webfeed/rss/rss-business,https://www.cbc.ca,top30,1,世界+商业
+28,ABC News Australia,澳大利亚,https://www.abc.net.au/news/feed/51120/rss.xml,https://www.abc.net.au/news,top30,1,世界新闻 印太视角
+29,Times of India,印度,https://timesofindia.indiatimes.com/rssfeeds/296589292.cms;https://timesofindia.indiatimes.com/rssfeeds/1898055.cms,https://timesofindia.indiatimes.com,top30,1,世界+商业 印度第一大英文报
+30,South China Morning Post,中国香港,https://www.scmp.com/rss/91/feed;https://www.scmp.com/rss/92/feed,https://www.scmp.com,top30,1,世界+中国/亚洲商业
+31,TASS 塔斯社,俄罗斯,https://tass.com/rss/v2.xml,https://tass.com,extra,0,俄罗斯国家通讯社 可选启用
+32,RT,俄罗斯,https://www.rt.com/rss/news/,https://www.rt.com,extra,0,俄罗斯官方英文媒体 可选启用
+33,Xinhua 新华社,中国,http://www.xinhuanet.com/english/rss/worldrss.xml,http://www.xinhuanet.com/english,extra,0,中国国家通讯社英文 可选启用
+34,CGTN,中国,https://www.cgtn.com/subscribe/rss/section/world.xml,https://www.cgtn.com,extra,0,中国国际电视台 可选启用
+35,Anadolu Agency,土耳其,https://www.aa.com.tr/en/rss/default?cat=latest,https://www.aa.com.tr/en,extra,0,土耳其国家通讯社 可选启用
+36,The Straits Times,新加坡,https://www.straitstimes.com/news/world/rss.xml,https://www.straitstimes.com,extra,0,东南亚视角 可选启用
+37,Hindustan Times,印度,https://www.hindustantimes.com/feeds/rss/world-news/rssfeed.xml,https://www.hindustantimes.com,extra,0,可选启用
+38,The Independent,英国,https://www.independent.co.uk/news/world/rss,https://www.independent.co.uk,extra,0,可选启用
+39,Sydney Morning Herald,澳大利亚,https://www.smh.com.au/rss/world.xml,https://www.smh.com.au,extra,0,可选启用
+40,Times of Israel,以色列,https://www.timesofisrael.com/feed/,https://www.timesofisrael.com,extra,0,中东能源要地 可选启用
+41,Middle East Eye,中东,https://www.middleeasteye.net/rss,https://www.middleeasteye.net,extra,0,中东地区报道 可选启用
+42,MarketWatch,美国,http://feeds.marketwatch.com/marketwatch/topstories/,https://www.marketwatch.com,extra,0,市场快讯 可选启用
+43,Yahoo Finance,美国,https://finance.yahoo.com/news/rssindex,https://finance.yahoo.com,extra,0,可选启用
+44,Forbes Business,美国,https://www.forbes.com/business/feed/,https://www.forbes.com/business,extra,0,可选启用
+45,Business Insider,美国,https://www.businessinsider.com/rss,https://www.businessinsider.com,extra,0,可选启用
