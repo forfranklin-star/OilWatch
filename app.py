@@ -127,9 +127,11 @@ with tab_latest:
         st.caption("同事件的多家报道已折叠，点击「📎 另有 N 条同事件报道」展开。")
         st.divider()
         st.markdown(storage.read_markdown(chosen), unsafe_allow_html=True)
-        st.download_button(
-            "下载该报告 Markdown", data=storage.read_markdown(chosen).encode("utf-8"),
-            file_name=f"{chosen}.md", mime="text/markdown")
+        with st.expander("导出 / 下载该报告"):
+            st.download_button(
+                "⬇ 下载该报告 Markdown",
+                data=storage.read_markdown(chosen).encode("utf-8"),
+                file_name=f"{chosen}.md", mime="text/markdown")
 
 # ---------------------------------------------------------------- 主题树
 with tab_tree:
@@ -167,7 +169,8 @@ with tab_tree:
 
 # ---------------------------------------------------------------- 报告档案
 with tab_archive:
-    st.caption("所有报告保存在仓库 reports/ 目录；可导出到本地、重命名或删除。")
+    st.caption("所有报告保存在仓库 reports/ 目录；选中即在页面内直接显示全文，"
+               "导出/重命名/删除收在底部折叠区。")
     metas = storage.list_reports()
     if metas:
         df = pd.DataFrame([{
@@ -177,51 +180,58 @@ with tab_archive:
         } for m in metas])
         st.dataframe(df, width="stretch", hide_index=True)
 
-        st.subheader("单份管理")
-        chosen2 = st.selectbox("选择要管理的报告", [m["id"] for m in metas],
-                               key="archive_select")
-        cc1, cc2, cc3 = st.columns(3)
+        st.subheader("查看报告")
+        chosen2 = st.selectbox("选择报告（页面内直接显示全文）",
+                               [m["id"] for m in metas], key="archive_select")
         meta2 = next(m for m in metas if m["id"] == chosen2)
-        cc1.download_button(
-            "⬇ 导出 .md", data=storage.read_markdown(chosen2).encode("utf-8"),
-            file_name=f"{chosen2}.md", mime="text/markdown", width="stretch")
-        cc2.download_button(
-            "⬇ 导出 .json",
-            data=json.dumps(storage.load_report(chosen2), ensure_ascii=False, indent=2
-                            ).encode("utf-8"),
-            file_name=f"{chosen2}.json", mime="application/json", width="stretch")
-        cc3.download_button(
-            "⬇ 导出该份 .zip（md+json）", data=storage.export_zip(chosen2),
-            file_name=f"{chosen2}.zip", mime="application/zip", width="stretch")
-
-        with st.form("rename_form"):
-            new_title = st.text_input("重命名（新的报告标题）", value=meta2["title"])
-            if st.form_submit_button("确认重命名"):
-                new_id = storage.rename_report(chosen2, new_title)
-                st.session_state["selected_id"] = new_id
-                st.success(f"已重命名，新ID：{new_id}")
-                st.rerun()
-
-        st.write("")
-        if st.button("🗑 删除该报告"):
-            st.session_state["confirm_delete"] = chosen2
-        if st.session_state.get("confirm_delete") == chosen2:
-            st.warning("确认删除？此操作不可恢复（删除前可先导出备份）。")
-            cdel1, cdel2 = st.columns(2)
-            if cdel1.button("确认删除", type="primary"):
-                storage.delete_report(chosen2)
-                st.session_state.pop("confirm_delete", None)
-                st.rerun()
-            if cdel2.button("取消"):
-                st.session_state.pop("confirm_delete", None)
-                st.rerun()
+        st.caption(f"{meta2['title']}｜生成于 {meta2['generated_at']}｜"
+                   f"{meta2['item_count']} 条")
+        st.markdown(storage.read_markdown(chosen2), unsafe_allow_html=True)
 
         st.divider()
-        st.download_button(
-            "📦 一键导出全部存档（ZIP，下载到本地电脑）",
-            data=storage.export_zip(),
-            file_name=f"oilwatch_reports_{now_local().strftime('%Y%m%d_%H%M')}.zip",
-            mime="application/zip")
+        with st.expander("导出 / 重命名 / 删除（本地备份与管理）"):
+            cc1, cc2, cc3 = st.columns(3)
+            cc1.download_button(
+                "⬇ 导出 .md", data=storage.read_markdown(chosen2).encode("utf-8"),
+                file_name=f"{chosen2}.md", mime="text/markdown", width="stretch")
+            cc2.download_button(
+                "⬇ 导出 .json",
+                data=json.dumps(storage.load_report(chosen2), ensure_ascii=False,
+                                indent=2).encode("utf-8"),
+                file_name=f"{chosen2}.json", mime="application/json", width="stretch")
+            cc3.download_button(
+                "⬇ 导出该份 .zip（md+json）", data=storage.export_zip(chosen2),
+                file_name=f"{chosen2}.zip", mime="application/zip", width="stretch")
+
+            with st.form("rename_form"):
+                new_title = st.text_input("重命名（新的报告标题）",
+                                          value=meta2["title"])
+                if st.form_submit_button("确认重命名"):
+                    new_id = storage.rename_report(chosen2, new_title)
+                    st.session_state["selected_id"] = new_id
+                    st.success(f"已重命名，新ID：{new_id}")
+                    st.rerun()
+
+            st.write("")
+            if st.button("🗑 删除该报告"):
+                st.session_state["confirm_delete"] = chosen2
+            if st.session_state.get("confirm_delete") == chosen2:
+                st.warning("确认删除？此操作不可恢复（删除前可先导出备份）。")
+                cdel1, cdel2 = st.columns(2)
+                if cdel1.button("确认删除", type="primary"):
+                    storage.delete_report(chosen2)
+                    st.session_state.pop("confirm_delete", None)
+                    st.rerun()
+                if cdel2.button("取消"):
+                    st.session_state.pop("confirm_delete", None)
+                    st.rerun()
+
+            st.divider()
+            st.download_button(
+                "📦 一键导出全部存档（ZIP，下载到本地电脑）",
+                data=storage.export_zip(),
+                file_name=f"oilwatch_reports_{now_local().strftime('%Y%m%d_%H%M')}.zip",
+                mime="application/zip")
     else:
         st.info("暂无存档。")
 
