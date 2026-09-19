@@ -28,6 +28,25 @@ def _parse_dt(value: Optional[str]) -> Optional[datetime]:
         return None
 
 
+def _recency_bonus(created: Optional[datetime], now_utc: datetime) -> float:
+    """时效加分：越新越靠前，但最多 1.5 分，不会越过一个重要度档。
+
+    ≤6h +1.5；≤12h +1.0；≤24h +0.5；更早或无时间戳 0。
+    """
+    if created is None:
+        return 0.0
+    age_h = (now_utc - created.astimezone(ZoneInfo("UTC"))).total_seconds() / 3600
+    if age_h < 0:  # 时间戳轻微在未来（时钟偏差）按最新处理
+        return 1.5
+    if age_h <= 6:
+        return 1.5
+    if age_h <= 12:
+        return 1.0
+    if age_h <= 24:
+        return 0.5
+    return 0.0
+
+
 def run(window_hours: int = 24, min_score: int = 3,
         use_media: bool = True, use_china: bool = True,
         use_institutions: bool = True, use_feeds: bool = True,
@@ -94,14 +113,18 @@ def run(window_hours: int = 24, min_score: int = 3,
         created = _parse_dt(item.get("created_at"))
         item["local_time"] = (created.astimezone(tz).strftime("%m-%d %H:%M")
                               if created else "")
+        bonus = _recency_bonus(created, now.astimezone(ZoneInfo("UTC")))
+        item["recency_bonus"] = bonus
+        item["rank"] = round(sc.score + bonus, 1)  # 综合排序值=重要度+时效
         kept.append(item)
 
     kept.sort(key=lambda x: (-x["score"], x.get("created_at") or ""))
     cluster_items(kept, threshold=dup_threshold)
+    # 主题内排序：综合 rank（重要度+时效）优先，同分按时间新→旧
     kept.sort(key=lambda x: (
-        -x["score"],
-        -(x.get("likes", 0) + x.get("retweets", 0)),
-        x.get("created_at") or "",
+        -x["rank"], -x["score"],
+        -(datetime.fromisoformat(x["created_at"]).timestamp()
+          if x.get("created_at") else 0),
     ))
 
     section_counts = Counter(i["primary_section"] for i in kept)
@@ -111,7 +134,7 @@ def run(window_hours: int = 24, min_score: int = 3,
     main_items = [i for i in kept if not i["folded"]]
 
     report = {
-        "schema_version": 3,
+        "schema_version": 4,  # v4: 条目含 rank（重要度+时效），报告改主题树
         "title": f"原油观察日报 {now.strftime('%Y-%m-%d')}",
         "report_date": now.strftime("%Y-%m-%d"),
         "generated_at": now.isoformat(timespec="seconds"),

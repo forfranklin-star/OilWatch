@@ -93,8 +93,8 @@ if auto_run and not st.session_state.get("auto_ran"):
             st.session_state["selected_id"] = rid
     st.session_state["auto_ran"] = True
 
-tab_latest, tab_archive, tab_sources, tab_help = st.tabs(
-    ["📄 报告阅读", "🗄 报告档案", "📰 信源清单", "ℹ️ 说明与部署"])
+tab_latest, tab_tree, tab_archive, tab_sources, tab_help = st.tabs(
+    ["📄 报告阅读", "🌳 主题树", "🗄 报告档案", "📰 信源清单", "ℹ️ 说明与部署"])
 
 # ---------------------------------------------------------------- 报告阅读
 with tab_latest:
@@ -130,6 +130,40 @@ with tab_latest:
         st.download_button(
             "下载该报告 Markdown", data=storage.read_markdown(chosen).encode("utf-8"),
             file_name=f"{chosen}.md", mime="text/markdown")
+
+# ---------------------------------------------------------------- 主题树
+with tab_tree:
+    metas = storage.list_reports()
+    if not metas:
+        st.info("还没有存档报告。")
+    else:
+        ids = [m["id"] for m in metas]
+        tree_idx = ids.index(st.session_state["selected_id"]) \
+            if st.session_state.get("selected_id") in ids else 0
+        tree_chosen = st.selectbox(
+            "选择报告", ids, index=tree_idx, key="tree_report",
+            format_func=lambda r: next(f"{m['title']}（{m['item_count']}条）"
+                                       for m in metas if m["id"] == r))
+        tree_rep = storage.load_report(tree_chosen)
+        cc1, cc2 = st.columns(2)
+        only_nonempty = cc1.checkbox("只显示有内容的门类", value=True)
+        open_sections = cc2.checkbox("门类默认全部展开", value=True)
+        st.caption("目录层级：门类 → 主题 → 条目；主题内按「重要度 + 时效」综合排序，"
+                   "同事件报道折叠在主条目内。")
+        st.divider()
+        if only_nonempty:
+            # 临时把空门类从树中剔除（不修改存档）
+            import copy
+            tree_rep = copy.deepcopy(tree_rep)
+            tree_rep["items"] = [i for i in tree_rep["items"]
+                                 if tree_rep.get("section_counts", {})
+                                 .get(i.get("primary_section"), 0) > 0]
+            tree_rep["main_items"] = [i for i in tree_rep.get("main_items", [])
+                                      if tree_rep.get("section_counts", {})
+                                      .get(i.get("primary_section"), 0) > 0]
+        st.markdown(report_mod.render_toc(tree_rep))
+        st.markdown(report_mod.render_tree(tree_rep, section_open=open_sections),
+                    unsafe_allow_html=True)
 
 # ---------------------------------------------------------------- 报告档案
 with tab_archive:
@@ -225,10 +259,12 @@ with tab_help:
         "Google News 站内备份）、14 家权威机构（OPEC/IEA/EIA/美联储/白宫/北约等）。\n"
         "2. **四大门类**：A 能源市场、B 战争与地缘、C 宏观经济、D 政治政策；"
         "纯政治噪音自动剔除。\n"
-        "3. **去重折叠**：同一事件被多家媒体报道时，按标题相似度聚为一组，"
-        "主报道直接展示、其余折叠，点击「📎 另有 N 条同事件报道」展开。\n"
-        "4. **定时**：GitHub Actions 每天 09:08（北京时间）生成并提交仓库；网页可随时手动生成。\n"
-        "5. **存档**：.json + .md 成对保存，支持导出/重命名/删除。")
+        "3. **主题树目录**：报告按「四大门类 → 10 个主题 → 条目」形成可折叠树状目录"
+        "（🌳 主题树 Tab），主题内按重要度+时效综合排序，越新且越相关越靠前。\n"
+        "4. **去重折叠**：同一事件被多家媒体报道时聚为一组，主报道直接展示、"
+        "其余折叠，点击「📎 另有 N 条同事件报道」展开。\n"
+        "5. **定时**：GitHub Actions 每天 09:08（北京时间）生成并提交仓库；网页可随时手动生成。\n"
+        "6. **存档**：.json + .md 成对保存，支持导出/重命名/删除。")
     st.subheader("数据源自检")
     if st.button("测试 WTI/Brent 价格源"):
         st.json(cached_price_snapshot())
