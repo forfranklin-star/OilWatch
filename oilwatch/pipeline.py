@@ -47,7 +47,7 @@ def _recency_bonus(created: Optional[datetime], now_utc: datetime) -> float:
     return 0.0
 
 
-def run(window_hours: int = 24, min_score: int = 3,
+def run(window_hours: int = 24, min_score: int = 5,
         use_media: bool = True, use_china: bool = True,
         use_institutions: bool = True, use_feeds: bool = True,
         use_prices: bool = True, now: Optional[datetime] = None,
@@ -68,17 +68,13 @@ def run(window_hours: int = 24, min_score: int = 3,
         raw_items.extend(items)
         statuses.extend(st)
 
-    # 1) 全球主流媒体
     if use_media:
         _collect(*media_feeds.fetch_sources(media_sources, "media", since_utc))
-    # 2) 中国国内政经信源
     if use_china:
         _collect(*media_feeds.fetch_china(since_utc))
-    # 3) 权威机构
     if use_institutions:
         _collect(*media_feeds.fetch_sources(inst_sources, "institution",
                                             since_utc, grace_hours=72))
-    # 4) 公共聚合骨干
     if use_feeds:
         try:
             feed_items = public_feeds.fetch_feeds(since_utc)
@@ -90,7 +86,6 @@ def run(window_hours: int = 24, min_score: int = 3,
 
     price_data = prices_mod.snapshot() if use_prices else None
 
-    # 5) 相关性过滤与打分（按标题精确去重，再做近似聚类折叠）
     kept = []
     dedup_titles = set()
     for item in raw_items:
@@ -98,7 +93,7 @@ def run(window_hours: int = 24, min_score: int = 3,
         if sc.score < min_score:
             continue
         if not any(g != "政治政策" for g in sc.groups):
-            continue  # 纯政治噪音不入选
+            continue
         title_key = (item.get("title") or item.get("text", ""))[:60].lower()
         if title_key and title_key in dedup_titles:
             continue
@@ -115,12 +110,11 @@ def run(window_hours: int = 24, min_score: int = 3,
                               if created else "")
         bonus = _recency_bonus(created, now.astimezone(ZoneInfo("UTC")))
         item["recency_bonus"] = bonus
-        item["rank"] = round(sc.score + bonus, 1)  # 综合排序值=重要度+时效
+        item["rank"] = round(sc.score + bonus, 1)
         kept.append(item)
 
     kept.sort(key=lambda x: (-x["score"], x.get("created_at") or ""))
     cluster_items(kept, threshold=dup_threshold)
-    # 主题内排序：综合 rank（重要度+时效）优先，同分按时间新→旧
     kept.sort(key=lambda x: (
         -x["rank"], -x["score"],
         -(datetime.fromisoformat(x["created_at"]).timestamp()
@@ -134,7 +128,7 @@ def run(window_hours: int = 24, min_score: int = 3,
     main_items = [i for i in kept if not i["folded"]]
 
     report = {
-        "schema_version": 4,  # v4: 条目含 rank（重要度+时效），报告改主题树
+        "schema_version": 4,
         "title": f"原油观察日报 {now.strftime('%Y-%m-%d')}",
         "report_date": now.strftime("%Y-%m-%d"),
         "generated_at": now.isoformat(timespec="seconds"),

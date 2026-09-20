@@ -33,10 +33,7 @@ def score_text(text: str) -> Score:
     return s
 
 
-def is_relevant(text: str, min_score: int = 3) -> bool:
-    """入选规则（两者同时满足）：
-    1) 总分 ≥ min_score（默认3：一个核心油价词，或两个次级主题）；
-    2) 至少命中一个油价直接相关组——纯政治/纯泛宏观噪音不入选。
-    """
+def is_relevant(text: str, min_score: int = 5) -> bool:
+    """入选：总分 ≥ min_score，且至少命中一个油价直接相关组。"""
     s = score_text(text)
     return s.score >= min_score and any(g in MARKET_MOVING for g in s.groups)

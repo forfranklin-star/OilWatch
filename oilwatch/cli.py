@@ -3,7 +3,7 @@
 
 用法：
   python -m oilwatch.cli daily                # 生成最近24小时日报并存档
-  python -m oilwatch.cli daily --window-hours 24 --min-score 3
+  python -m oilwatch.cli daily --window-hours 24 --min-score 5
   python -m oilwatch.cli sources              # 打印媒体/国内/机构信源清单
   python -m oilwatch.cli list                 # 列出已存档报告
 """
@@ -61,7 +61,7 @@ def main(argv=None) -> int:
 
     p_daily = sub.add_parser("daily", help="生成并保存日报")
     p_daily.add_argument("--window-hours", type=int, default=24)
-    p_daily.add_argument("--min-score", type=int, default=3)
+    p_daily.add_argument("--min-score", type=int, default=5)
     p_daily.add_argument("--no-media", action="store_true", help="不抓取全球媒体")
     p_daily.add_argument("--no-china", action="store_true", help="不抓取国内信源")
     p_daily.add_argument("--no-institutions", action="store_true", help="不抓取机构")
