@@ -107,14 +107,18 @@ def _organize(report: dict):
     return folded_map, tree, totals
 
 
-def render_tree(report: dict, section_open: bool = True) -> str:
-    """门类（展开）> 主题（折叠）> 条目；空门类不显示。
+def _pid(report: dict) -> str:
+    """按报告生成时间生成 ASCII 锚点前缀，避免多份报告 id 冲突。"""
+    raw = str(report.get("generated_at", "r"))
+    return "r" + "".join(ch for ch in raw if ch.isalnum() and ch.isascii())
 
-    section_open 仅为兼容旧版调用保留，门类固定默认展开。
-    """
+
+def render_tree(report: dict, section_open: bool = True) -> str:
+    """门类（展开）> 主题（折叠）> 条目；空门类不显示。节点带锚点 id。"""
     folded_map, tree, totals = _organize(report)
+    p = _pid(report)
     blocks = []
-    for section, groups in tree.items():
+    for s_idx, (section, groups) in enumerate(tree.items()):
         if not groups:
             continue
         n_groups = sum(len(v) for v in groups.values())
@@ -122,43 +126,50 @@ def render_tree(report: dict, section_open: bool = True) -> str:
                 f"<small>{_count_label(n_groups, totals[section])}</small></summary>")
         group_html = []
         for group, gi in groups.items():
+            g_idx = GROUP_ORDER.index(group)
             group_total = sum(1 for i in report["items"]
                               if i.get("primary_group") == group)
             top_score = max(i["score"] for i in gi)
             latest = max((i.get("local_time", "") for i in gi), default="")
-            lis = []
-            dups = []
+            lis, dups = [], []
             for i in gi:
                 lis.append(_item_html(i))
                 folded = _folded_html(folded_map.get(i["cluster_id"], []))
                 if folded:
                     dups.append(folded)
             group_html.append(
-                "<details>"
+                f'<details id="{p}-grp-{g_idx}">'
                 f"<summary>&emsp;&emsp;<b>{_esc(group)}</b> "
                 f"<small>{_count_label(len(gi), group_total)} · 最高 {top_score} 分"
                 f" · 最新 {latest}</small></summary>"
                 f'<ul>{"".join(lis)}</ul>{"".join(dups)}'
                 "</details>")
-        blocks.append(f'<details class="sec" open>{head}<div>'
+        blocks.append(f'<details class="sec" id="{p}-sec-{s_idx}" open>{head}<div>'
                       + "".join(group_html) + "</div></details>")
     return "\n".join(blocks)
 
 
 def render_toc(report: dict) -> str:
+    """可点击的主题目录：门类/主题均为锚点链接，跳到下方树对应位置。"""
     _, tree, totals = _organize(report)
-    lines = ["```text", "📂 主题目录"]
-    for section, groups in tree.items():
+    p = _pid(report)
+    rows = ['<div class="toc"><b>📂 主题目录</b>']
+    for s_idx, (section, groups) in enumerate(tree.items()):
         if not groups:
             continue
         n_groups = sum(len(v) for v in groups.values())
-        lines.append(f"{SEC_ICON.get(section, '·')} {section}  "
-                     f"[{_count_label(n_groups, totals[section])}]")
+        rows.append(
+            f'<a class="toc-sec" href="#{p}-sec-{s_idx}">'
+            f"{SEC_ICON.get(section, '·')} {_esc(section)} "
+            f"<small>{_count_label(n_groups, totals[section])}</small></a>")
         for g, gi in groups.items():
+            g_idx = GROUP_ORDER.index(g)
             n = sum(1 for i in report["items"] if i.get("primary_group") == g)
-            lines.append(f"    ├─ {g}（{_count_label(len(gi), n)}）")
-    lines.append("```")
-    return "\n".join(lines)
+            rows.append(
+                f'<a class="toc-grp" href="#{p}-grp-{g_idx}">├─ {_esc(g)} '
+                f"<small>{_count_label(len(gi), n)}</small></a>")
+    rows.append("</div>")
+    return "\n".join(rows)
 
 
 def _status_block(report: dict) -> str:
