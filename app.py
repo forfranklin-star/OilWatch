@@ -119,7 +119,8 @@ if st.sidebar.button("⚡ 立即生成报告", type="primary", width="stretch"):
     with st.spinner("正在抓取多源内容并生成报告…"):
         rid = generate(window_hours, min_score, use_media, use_china,
                        use_institutions, use_feeds, use_prices)
-    st.sidebar.success(f"已生成：{rid}")
+    st.sidebar.success(f"已生成：{rid}\n\n本次参数：阈值 {min_score} 分、"
+                       f"窗口 {window_hours} 小时。报告抬头会记录这两个值。")
     st.session_state["selected_id"] = rid
 
 auto_run = st.sidebar.checkbox("当天 09:08 后无报告时，打开自动补生成", value=False)
@@ -160,6 +161,9 @@ with tab_latest:
         sec = rep.get("section_counts", {})
         c5.metric("能源 / 地缘条目",
                   f"{sum(v for k, v in sec.items() if k.startswith(('A', 'B')))}")
+        st.caption(f"本报告生成于 {rep.get('generated_at', '-')}，"
+                   f"窗口 {rep.get('window_hours', '-')} 小时，"
+                   f"**实际阈值 {rep.get('min_score', '-')} 分**。")
         st.divider()
         st.markdown(storage.read_markdown(chosen), unsafe_allow_html=True)
         with st.expander("导出 / 下载该报告"):
@@ -175,7 +179,9 @@ with tab_tree:
     else:
         chosen = report_picker(metas, key="tree_pick")
         rep = storage.load_report(chosen)
-        st.caption("门类 → 主题 → 条目；主题内按重要度 + 时效排序，同事件报道已折叠。")
+        st.caption(f"门类 → 主题 → 条目；主题内按重要度 + 时效排序，同事件报道已折叠。"
+                   f"本报告实际阈值 {rep.get('min_score', '-')} 分、"
+                   f"窗口 {rep.get('window_hours', '-')} 小时。")
         st.markdown(report_mod.render_toc(rep))
         st.markdown(report_mod.render_tree(rep), unsafe_allow_html=True)
 
