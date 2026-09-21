@@ -58,6 +58,20 @@ table.stattable { border-collapse: collapse; margin: 8px 0; }
 table.stattable th, table.stattable td {
     border: 1px solid #e5e7eb; padding: 5px 10px; font-size: 0.92rem;
 }
+.toc {
+    background: #f6f8fb; border: 1px solid #e8ebf0; border-radius: 10px;
+    padding: 12px 18px; margin: 10px 0;
+}
+.toc b { display: block; margin-bottom: 4px; }
+.toc a {
+    display: block; text-decoration: none; color: #1f2329;
+    padding: 3px 0; line-height: 1.5;
+}
+.toc a:hover { color: #d9530a; text-decoration: underline; }
+.toc a small { color: #9aa1ad; margin-left: 6px; }
+.toc .toc-sec { font-weight: 700; font-size: 1.02rem; margin-top: 6px; }
+.toc .toc-grp { padding-left: 28px; color: #444d5c; }
+details:not([data-testid="stExpander"]) { scroll-margin-top: 70px; }
 </style>""", unsafe_allow_html=True)
 
 
@@ -182,7 +196,7 @@ with tab_tree:
         st.caption(f"门类 → 主题 → 条目；主题内按重要度 + 时效排序，同事件报道已折叠。"
                    f"本报告实际阈值 {rep.get('min_score', '-')} 分、"
                    f"窗口 {rep.get('window_hours', '-')} 小时。")
-        st.markdown(report_mod.render_toc(rep))
+        st.markdown(report_mod.render_toc(rep), unsafe_allow_html=True)
         st.markdown(report_mod.render_tree(rep), unsafe_allow_html=True)
 
 with tab_archive:
