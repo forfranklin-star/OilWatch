@@ -1,0 +1,28 @@
+name: wake-up
+
+# 每 8 小时访问一次，防止 Streamlit 免费版休眠。
+# 注意：必须带 cookie 罐（-c/-b）跟随 3 次唤醒跳转，否则 curl 报 exit code 47。
+on:
+  schedule:
+    - cron: '23 */8 * * *'
+  workflow_dispatch:
+
+jobs:
+  wake:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: 唤醒应用
+        run: |
+          APP="https://oilwatch-han.streamlit.app"
+          UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
+          code=$(curl -sS -L --max-redirs 10 -m 60 \
+            -c cookies.txt -b cookies.txt -A "$UA" \
+            -H "Accept: text/html,application/xhtml+xml,*/*;q=0.8" \
+            -o /tmp/app.html -w "%{http_code}" "$APP/" || echo "000")
+          echo "最终 HTTP: $code"
+          if [ "$code" != "200" ]; then
+            echo "::error::唤醒失败，状态码 $code"
+            exit 1
+          fi
+          grep -qi streamlit /tmp/app.html

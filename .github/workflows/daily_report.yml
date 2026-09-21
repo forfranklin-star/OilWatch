@@ -1,8 +1,6 @@
 name: daily-oil-report
 
-# 每天北京时间 09:08 生成报告（GitHub Actions 使用 UTC，09:08 CST = 01:08 UTC）
-# 错峰用 08 分，降低 GitHub 整点任务排队延迟
-# 同时支持手动触发（Actions 页面 -> Run workflow）
+# 每天北京时间 09:08 生成（cron 为 UTC：01:08）；支持 Actions 页面手动触发
 on:
   schedule:
     - cron: '8 1 * * *'
@@ -40,7 +38,7 @@ jobs:
         run: python -m oilwatch.cli sources
 
       - name: Generate daily report
-        run: python -m oilwatch.cli daily --window-hours 24 --min-score 3
+        run: python -m oilwatch.cli daily --window-hours 24 --min-score 5
 
       - name: Commit reports
         run: |
